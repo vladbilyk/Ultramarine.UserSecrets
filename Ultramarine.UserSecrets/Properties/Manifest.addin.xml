@@ -2,4 +2,12 @@
 <ExtensionModel>
     <Runtime>
     </Runtime>
+    <Extension path="/MonoDevelop/Ide/Commands/Edit">
+        <Command id="Ultramarine.UserSecrets.CommandIds.ShowSecrets"
+                  _label="Show User Secrets"
+                  defaultHandler="Ultramarine.UserSecrets.ShowSecretsHandler" />
+    </Extension>
+    <Extension path="/MonoDevelop/Ide/MainMenu/Project">
+        <CommandItem id="Ultramarine.UserSecrets.CommandIds.ShowSecrets" />
+    </Extension>
 </ExtensionModel>
