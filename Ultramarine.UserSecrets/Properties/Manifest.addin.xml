@@ -3,11 +3,18 @@
     <Runtime>
     </Runtime>
     <Extension path="/MonoDevelop/Ide/Commands/Edit">
-        <Command id="Ultramarine.UserSecrets.CommandIds.ShowSecrets"
+        <Command id="Ultramarine.UserSecrets.CommandIds.ShowSecretsMenu"
                   _label="Show User Secrets"
-                  defaultHandler="Ultramarine.UserSecrets.ShowSecretsHandler" />
+                  defaultHandler="Ultramarine.UserSecrets.ShowSecretsMenuHandler" />
+        <Command id="Ultramarine.UserSecrets.CommandIds.ShowSecretsContext"
+                  _label="Show User Secrets"
+                  defaultHandler="Ultramarine.UserSecrets.ShowSecretsContextHandler" />
+    </Extension>
+    <Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+        <CommandItem id="Ultramarine.UserSecrets.CommandIds.ShowSecretsContext"
+                      disabledVisible="false" />
     </Extension>
     <Extension path="/MonoDevelop/Ide/MainMenu/Project">
-        <CommandItem id="Ultramarine.UserSecrets.CommandIds.ShowSecrets" />
+        <CommandItem id="Ultramarine.UserSecrets.CommandIds.ShowSecretsMenu" />
     </Extension>
 </ExtensionModel>
