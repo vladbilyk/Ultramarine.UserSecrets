@@ -1,48 +1,47 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Xml.Linq;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects.Text;
 
 namespace Ultramarine.UserSecrets
 {
     public class ShowSecretsHandler : CommandHandler
     {
+        private const string USER_SECRETS_KEY = "UserSecretsId";
+
         protected override void Run()
         {
-            var filePath = IdeApp.ProjectOperations.CurrentSelectedProject?.FileName;
-            if (filePath.HasValue)
+            var project = IdeApp.ProjectOperations.CurrentSelectedProject;
+            if (project == null)
             {
-                var file = TextFile.ReadFile(filePath.Value);
-                var xdoc = XDocument.Parse(TextFile.ReadFile(filePath.Value)?.Text);
-                var secretIds = xdoc.Descendants("PropertyGroup").Elements("UserSecretsId").Select(i => (string)i).ToList();
+                return;
+            }
 
-                if (secretIds.Count > 0)
+            if (project.ProjectProperties.HasProperty(USER_SECRETS_KEY))
+            {
+                var secretId = project.ProjectProperties.GetValue(USER_SECRETS_KEY);
+
+                // TODO: think about another platforms
+                var secretsPath = new FilePath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+                    .Combine($".microsoft/usersecrets/{secretId}/secrets.json");
+
+                if (!File.Exists(secretsPath))
                 {
-                    // TODO: think about another platforms
-                    var secretsPath = new FilePath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-                        .Combine($".microsoft/usersecrets/{secretIds[0]}/secrets.json");
-
-                    if (!File.Exists(secretsPath))
+                    if (!Directory.Exists(secretsPath.ParentDirectory))
                     {
-                        if (!Directory.Exists(secretsPath.ParentDirectory))
-                        {
-                            Directory.CreateDirectory(secretsPath.ParentDirectory);
-                        }
-                        File.WriteAllText(secretsPath, "{\n\n}");
+                        Directory.CreateDirectory(secretsPath.ParentDirectory);
                     }
-
-                    IdeApp.Workbench.OpenDocument(secretsPath, IdeApp.ProjectOperations.CurrentSelectedProject, true);
+                    File.WriteAllText(secretsPath, "{\n\n}");
                 }
-                else
-                {
-                    MessageService.ShowWarning("User Secrets are not initialized for this project.");
 
-                    // TODO: ask to initalize user secrets
-                }
+                IdeApp.Workbench.OpenDocument(secretsPath, IdeApp.ProjectOperations.CurrentSelectedProject, true);
+            }
+            else
+            {
+                MessageService.ShowWarning("User Secrets are not initialized for this project.");
+
+                // TODO: ask to initalize user secrets
             }
         }
     }
