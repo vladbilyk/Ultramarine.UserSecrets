@@ -10,7 +10,7 @@ namespace Ultramarine.UserSecrets
     {
         private const string USER_SECRETS_KEY = "UserSecretsId";
 
-        protected override void Run()
+        protected override async void Run()
         {
             var project = IdeApp.ProjectOperations.CurrentSelectedProject;
             if (project == null)
@@ -18,31 +18,38 @@ namespace Ultramarine.UserSecrets
                 return;
             }
 
-            if (project.ProjectProperties.HasProperty(USER_SECRETS_KEY))
+            if (!project.ProjectProperties.HasProperty(USER_SECRETS_KEY))
             {
-                var secretId = project.ProjectProperties.GetValue(USER_SECRETS_KEY);
-
-                // TODO: think about another platforms
-                var secretsPath = new FilePath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
-                    .Combine($".microsoft/usersecrets/{secretId}/secrets.json");
-
-                if (!File.Exists(secretsPath))
+                var answer = MessageService.AskQuestion("User Secrets are not initialized", 
+                                                        $"Do you want to initialize user secrets for the current project {project.Name}?", 
+                                                        0, 
+                                                        new[] { AlertButton.No, AlertButton.Yes });
+                if (answer == AlertButton.No)
                 {
-                    if (!Directory.Exists(secretsPath.ParentDirectory))
-                    {
-                        Directory.CreateDirectory(secretsPath.ParentDirectory);
-                    }
-                    File.WriteAllText(secretsPath, "{\n\n}");
+                    return;
                 }
 
-                IdeApp.Workbench.OpenDocument(secretsPath, IdeApp.ProjectOperations.CurrentSelectedProject, true);
+                var newSecretId = $"{project.Name}-{Guid.NewGuid().ToString()}";
+                project.ProjectProperties.SetValue(USER_SECRETS_KEY, newSecretId);
+                await project.SaveAsync(new ProgressMonitor());
             }
-            else
-            {
-                MessageService.ShowWarning("User Secrets are not initialized for this project.");
 
-                // TODO: ask to initalize user secrets
+            var secretId = project.ProjectProperties.GetValue(USER_SECRETS_KEY);
+
+            // TODO: think about another platforms
+            var secretsPath = new FilePath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile))
+                .Combine($".microsoft/usersecrets/{secretId}/secrets.json");
+
+            if (!File.Exists(secretsPath))
+            {
+                if (!Directory.Exists(secretsPath.ParentDirectory))
+                {
+                    Directory.CreateDirectory(secretsPath.ParentDirectory);
+                }
+                File.WriteAllText(secretsPath, "{\n\n}");
             }
+
+            await IdeApp.Workbench.OpenDocument(secretsPath, IdeApp.ProjectOperations.CurrentSelectedProject, true);
         }
     }
 }
