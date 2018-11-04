@@ -3,7 +3,7 @@ using MonoDevelop.Ide;
 
 namespace Ultramarine.UserSecrets
 {
-    public class ShowSecretsMenuHandler : ShowSecretsHandler
+    public class ManageSecretsMenuHandler : ManageSecretsHandler
     {
         protected override void Update(CommandInfo info)
         {

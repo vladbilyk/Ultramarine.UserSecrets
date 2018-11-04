@@ -2,7 +2,7 @@
 {
     public enum CommandIds
     {
-        ShowSecretsMenu,
-        ShowSecretsContext
+        ManageSecretsMenu,
+        ManageSecretsContext
     }
 }
