@@ -6,7 +6,7 @@ using MonoDevelop.Ide;
 
 namespace Ultramarine.UserSecrets
 {
-    public class ShowSecretsHandler : CommandHandler
+    public class ManageSecretsHandler : CommandHandler
     {
         private const string USER_SECRETS_KEY = "UserSecretsId";
 

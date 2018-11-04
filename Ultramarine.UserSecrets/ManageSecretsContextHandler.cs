@@ -4,7 +4,7 @@ using MonoDevelop.Projects;
 
 namespace Ultramarine.UserSecrets
 {
-    public class ShowSecretsContextHandler : ShowSecretsHandler
+    public class ManageSecretsContextHandler : ManageSecretsHandler
     {
         protected override void Update(CommandInfo info)
         {
