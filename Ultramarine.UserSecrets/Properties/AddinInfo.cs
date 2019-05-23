@@ -30,7 +30,7 @@ using Mono.Addins.Description;
 [assembly: Addin(
     "Ultramarine.UserSecrets",
     Namespace = "Ultramarine.UserSecrets",
-    Version = "0.3"
+    Version = "0.4"
 )]
 
 [assembly: AddinName("User Secrets")]
